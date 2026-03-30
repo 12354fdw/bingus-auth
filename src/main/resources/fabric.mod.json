@@ -7,7 +7,7 @@
 	"authors": [
 		"12354fdw"
 	],
-	"license": "MIT",
+	"license": "CC0-1.0",
 	"environment": "server",
 	"entrypoints": {
 		"main": [
