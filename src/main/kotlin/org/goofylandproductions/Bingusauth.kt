@@ -24,6 +24,8 @@ object Bingusauth : ModInitializer {
 
 		// save player hook
 		ServerPlayConnectionEvents.JOIN.register { impl, sender, server ->
+			impl.player.sendSystemMessage(Component.literal("§cbingus-auth IS STILL IN §l§oBETA§r§c! please report bugs"))
+
 			SavedLocationCache.savePlayerPos(impl.player)
 			if (AuthManager.isRegistered(impl.player.uuid)) {
 				impl.player.sendSystemMessage(Component.literal("§9Use /login or /l to login"))
