@@ -30,7 +30,9 @@ object RegisterCommand {
         }
 
         AuthManager.register(player.uuid, password)
-        ctx.source.sendSuccess({ Component.literal("Registered successfully! Use /login or /l to authenticate.")}, false )
+        ctx.source.sendSuccess({ Component.literal("§aRegistered successfully! Logging in now!") }, false )
+
+        AuthManager.authenticate(player, password)
         return 1
     }
 }

@@ -25,6 +25,11 @@ object Bingusauth : ModInitializer {
 		// save player hook
 		ServerPlayConnectionEvents.JOIN.register { impl, sender, server ->
 			SavedLocationCache.savePlayerPos(impl.player)
+			if (AuthManager.isRegistered(impl.player.uuid)) {
+				impl.player.sendSystemMessage(Component.literal("§9Use /login or /l to login"))
+			} else {
+				impl.player.sendSystemMessage(Component.literal("§9 use /register to register"))
+			}
 		}
 
 		ServerPlayConnectionEvents.DISCONNECT.register { impl, server ->

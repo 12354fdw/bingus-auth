@@ -44,7 +44,7 @@ object LoginCommand {
             ctx.source.sendFailure(Component.literal("Wrong password!"))
             return 0
         }
-        ctx.source.sendSuccess({ Component.literal("Logged in successfully!") }, false)
+        ctx.source.sendSuccess({ Component.literal("§aLogged in successfully!") }, false)
 
         return 1
     }

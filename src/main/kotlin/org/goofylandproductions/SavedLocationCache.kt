@@ -32,7 +32,7 @@ object SavedLocationCache {
     fun isSafeTeleport(uuid: UUID): Boolean = safeTeleportPlayers.contains(uuid)
 
     fun savePlayerPos(player: ServerPlayer) {
-        locations[player.uuid] = SavedLocation(player)
+        if (!locations.contains(player.uuid)) locations[player.uuid] = SavedLocation(player)
         safeTeleportPlayers.add(player.uuid)
     }
 
