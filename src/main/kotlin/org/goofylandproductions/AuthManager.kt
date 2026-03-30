@@ -4,14 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import net.fabricmc.loader.api.FabricLoader
 import java.nio.file.Path
-import java.security.MessageDigest
-import java.security.SecureRandom
 import java.util.UUID
 import kotlin.io.path.*
+import de.mkammerer.argon2.Argon2Factory
 
 data class AuthEntry (
     val hash: String,
-    val salt: String
 )
 
 object AuthManager {
@@ -20,10 +18,11 @@ object AuthManager {
     private val authenticated = mutableSetOf<UUID>()
     private lateinit var dataFile: Path
 
+    private val argon2 = Argon2Factory.create()
+
     fun init() {
         dataFile = FabricLoader.getInstance().configDir
             .resolve("bingus-auth").resolve("data.json")
-
         load()
     }
 
@@ -35,23 +34,33 @@ object AuthManager {
     fun register(uuid: UUID, password: String) {
         if (passwordStore.containsKey(uuid.toString())) return
 
-        val salt = generateSalt()
-        val hash = hash(password, salt)
-        passwordStore[uuid.toString()] = AuthEntry(hash.toHex(), salt.toHex())
+        val hash = argon2.hash(4,131072,2,password.toCharArray())
+
+        passwordStore[uuid.toString()] = AuthEntry(hash)
         save()
     }
 
     fun checkPassword(uuid: UUID, password: String): Boolean {
         val entry = passwordStore[uuid.toString()] ?: return false
-        val salt = entry.salt.fromHex()
-        return hash(password, salt).toHex() == entry.hash
+        return argon2.verify(entry.hash, password.toCharArray())
+    }
+
+    fun deletePasswordEntry(uuid: UUID) {
+        passwordStore.remove(uuid.toString())
+        authenticated.remove(uuid)
+        save()
     }
 
     // auth
 
     fun isAuthenticated(uuid: UUID): Boolean = authenticated.contains(uuid)
-    fun setAuthenticated(uuid: UUID) { authenticated.add(uuid) }
-    fun onPlayerLeave(uuid: UUID) { authenticated.remove(uuid) }
+    fun setAuthenticated(uuid: UUID) {
+        authenticated.add(uuid)
+        SavedLocationCache.removeSafeTeleport(uuid)
+    }
+    fun onPlayerLeave(uuid: UUID) {
+        authenticated.remove(uuid)
+    }
 
     // IO helpers
 
@@ -68,19 +77,6 @@ object AuthManager {
     }
 
     // crypto helpers
-
-    private fun generateSalt(): ByteArray {
-        val bytes = ByteArray(16)
-        SecureRandom().nextBytes(bytes)
-        return bytes
-    }
-
-    private fun hash(password: String, salt: ByteArray): ByteArray {
-        val digest = MessageDigest.getInstance("SHA-256")
-        digest.update(salt)
-        digest.update(password.toByteArray(Charsets.UTF_8))
-        return digest.digest()
-    }
 
     private fun ByteArray.toHex(): String =
         joinToString("") { "%02X".format(it) }

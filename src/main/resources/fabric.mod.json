@@ -5,7 +5,7 @@
 	"name": "BingusAuth",
 	"description": "Simple auth mod for 26.1 - password login for Java players, auto-login for Bedrock/Floodgate",
 	"authors": [
-		"_12354fdw"
+		"12354fdw"
 	],
 	"license": "MIT",
 	"environment": "server",

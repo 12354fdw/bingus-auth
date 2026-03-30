@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 import org.goofylandproductions.AuthManager
+import org.goofylandproductions.SavedLocationCache
 
 object LoginCommand {
     fun registerCommand(dispatcher: CommandDispatcher<CommandSourceStack>) {
@@ -37,6 +38,7 @@ object LoginCommand {
 
         if (!AuthManager.isRegistered(player.uuid)) {
             ctx.source.sendFailure(Component.literal("You are not registered! Use /register first."))
+            return 0
         }
 
         if (!AuthManager.checkPassword(player.uuid, password)) {

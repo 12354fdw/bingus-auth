@@ -2,23 +2,33 @@ package org.goofylandproductions
 
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
+import net.minecraft.network.chat.Component
+import net.minecraft.world.level.Level
+import org.goofylandproductions.commands.DeletePasswordCommand
 import org.goofylandproductions.commands.LoginCommand
 import org.goofylandproductions.commands.RegisterCommand
 import org.slf4j.LoggerFactory
 
 object Bingusauth : ModInitializer {
-    private val logger = LoggerFactory.getLogger("bingus-auth")
+	val logger = LoggerFactory.getLogger("bingus-auth")
 
 	override fun onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		AuthManager.init()
 
-		//logger.info("Hello Fabric world!")
-
-		CommandRegistrationCallback.EVENT.register { dispatcher, context, selection ->
+		CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
 			RegisterCommand.registerCommand(dispatcher)
 			LoginCommand.registerCommand(dispatcher)
+			DeletePasswordCommand.registerCommand(dispatcher)
+		}
+
+		// save player hook
+		ServerPlayConnectionEvents.JOIN.register { impl, sender, server ->
+			SavedLocationCache.savePlayerPos(impl.player)
+		}
+
+		ServerPlayConnectionEvents.DISCONNECT.register { impl, server ->
+			AuthManager.onPlayerLeave(impl.player.uuid)
 		}
 	}
 }
