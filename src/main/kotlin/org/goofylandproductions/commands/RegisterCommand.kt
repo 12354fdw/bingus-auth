@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
+import net.minecraft.network.chat.Component
+import org.goofylandproductions.AuthManager
 
 object RegisterCommand {
     fun registerCommand(dispatcher: CommandDispatcher<CommandSourceStack> ) {
@@ -20,9 +22,15 @@ object RegisterCommand {
 
     private fun handleCommand(ctx: CommandContext<CommandSourceStack>): Int {
         val password = StringArgumentType.getString(ctx, "password")
-        val player = ctx.source.player
+        val player = ctx.source.player ?: return 0
 
-        // TODO: add logic
+        if (AuthManager.isRegistered(player.uuid)) {
+            ctx.source.sendFailure(Component.literal("You are already registered!"))
+            return 0
+        }
+
+        AuthManager.register(player.uuid, password)
+        ctx.source.sendSuccess({ Component.literal("Registered Successfully! Use /login or /l to authenticate.")}, false )
 
         return 1
     }
