@@ -7,7 +7,6 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 import org.goofylandproductions.AuthManager
-import org.goofylandproductions.SavedLocationCache
 
 object LoginCommand {
     fun registerCommand(dispatcher: CommandDispatcher<CommandSourceStack>) {
@@ -41,12 +40,10 @@ object LoginCommand {
             return 0
         }
 
-        if (!AuthManager.checkPassword(player.uuid, password)) {
+        if (!AuthManager.authenticate(player, password)) {
             ctx.source.sendFailure(Component.literal("Wrong password!"))
             return 0
         }
-
-        AuthManager.setAuthenticated(player.uuid)
         ctx.source.sendSuccess({ Component.literal("Logged in successfully!") }, false)
 
         return 1

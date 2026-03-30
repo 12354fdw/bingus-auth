@@ -7,6 +7,7 @@ import java.nio.file.Path
 import java.util.UUID
 import kotlin.io.path.*
 import de.mkammerer.argon2.Argon2Factory
+import net.minecraft.server.level.ServerPlayer
 
 data class AuthEntry (
     val hash: String,
@@ -40,7 +41,7 @@ object AuthManager {
         save()
     }
 
-    fun checkPassword(uuid: UUID, password: String): Boolean {
+    private fun checkPassword(uuid: UUID, password: String): Boolean {
         val entry = passwordStore[uuid.toString()] ?: return false
         return argon2.verify(entry.hash, password.toCharArray())
     }
@@ -54,9 +55,12 @@ object AuthManager {
     // auth
 
     fun isAuthenticated(uuid: UUID): Boolean = authenticated.contains(uuid)
-    fun setAuthenticated(uuid: UUID) {
-        authenticated.add(uuid)
-        SavedLocationCache.removeSafeTeleport(uuid)
+
+    fun authenticate(player: ServerPlayer, password: String): Boolean {
+        if (!checkPassword(player.uuid, password)) return false
+        authenticated.add(player.uuid)
+        SavedLocationCache.authenticated(player)
+        return true
     }
     fun onPlayerLeave(uuid: UUID) {
         authenticated.remove(uuid)
