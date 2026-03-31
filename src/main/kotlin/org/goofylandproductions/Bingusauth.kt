@@ -8,6 +8,7 @@ import net.minecraft.world.level.Level
 import org.goofylandproductions.commands.DeletePasswordCommand
 import org.goofylandproductions.commands.LoginCommand
 import org.goofylandproductions.commands.RegisterCommand
+import org.goofylandproductions.integrations.FloodgateHelper
 import org.slf4j.LoggerFactory
 
 object Bingusauth : ModInitializer {
@@ -24,13 +25,26 @@ object Bingusauth : ModInitializer {
 
 		// save player hook
 		ServerPlayConnectionEvents.JOIN.register { impl, sender, server ->
-			impl.player.sendSystemMessage(Component.literal("§cbingus-auth IS STILL IN §l§oBETA§r§c! please report bugs"))
+			val player = impl.player
 
-			SavedLocationCache.savePlayerPos(impl.player)
-			if (AuthManager.isRegistered(impl.player.uuid)) {
-				impl.player.sendSystemMessage(Component.literal("§9Use /login or /l to login"))
+			if (FloodgateHelper.isFloodgatePlayer(player.uuid)) {
+				AuthManager.forceAuthenticate(player.uuid)
+				return@register
+			}
+
+			player.sendSystemMessage(Component.literal("§cbingus-auth IS STILL IN §l§oBETA§r§c! please report bugs"))
+			SavedLocationCache.savePlayerPos(player)
+			player.teleportTo(
+				server.getLevel(Level.OVERWORLD)!!,
+				AuthConfig.spawnX, AuthConfig.spawnY, AuthConfig.spawnZ,
+				setOf(),
+				AuthConfig.spawnYaw, AuthConfig.spawnPitch,
+				false
+			)
+			if (AuthManager.isRegistered(player.uuid)) {
+				player.sendSystemMessage(Component.literal("§9Use /login or /l to login"))
 			} else {
-				impl.player.sendSystemMessage(Component.literal("§9use /register to register"))
+				player.sendSystemMessage(Component.literal("§9use /register to register"))
 			}
 		}
 

@@ -56,6 +56,8 @@ object AuthManager {
 
     fun isAuthenticated(uuid: UUID): Boolean = authenticated.contains(uuid)
 
+    fun forceAuthenticate(uuid: UUID) { authenticated.add(uuid) }
+
     fun authenticate(player: ServerPlayer, password: String): Boolean {
         if (!checkPassword(player.uuid, password)) return false
         authenticated.add(player.uuid)
