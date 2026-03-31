@@ -30,7 +30,7 @@ object Bingusauth : ModInitializer {
 			if (AuthManager.isRegistered(impl.player.uuid)) {
 				impl.player.sendSystemMessage(Component.literal("§9Use /login or /l to login"))
 			} else {
-				impl.player.sendSystemMessage(Component.literal("§9 use /register to register"))
+				impl.player.sendSystemMessage(Component.literal("§9use /register to register"))
 			}
 		}
 

@@ -3,7 +3,7 @@
 	"id": "bingus-auth",
 	"version": "${version}",
 	"name": "BingusAuth",
-	"description": "Simple auth mod for 26.1 - password login for Java players, auto-login for Bedrock/Floodgate",
+	"description": "Simple auth mod for 26.1 - password login for Java players",
 	"authors": [
 		"12354fdw"
 	],

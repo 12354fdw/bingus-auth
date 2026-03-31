@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"AuthPacketListenerMixin",
-		"AuthPlayerTickMixin"
+		"AuthPlayerTickMixin",
+		"AuthVehicleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
