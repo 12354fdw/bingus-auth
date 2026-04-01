@@ -37,6 +37,8 @@ dependencies {
 	implementation("net.fabricmc.fabric-api:fabric-api:${providers.gradleProperty("fabric_api_version").get()}")
 	implementation("net.fabricmc:fabric-language-kotlin:${providers.gradleProperty("fabric_kotlin_version").get()}")
 	implementation("de.mkammerer:argon2-jvm:2.11")
+	include("de.mkammerer:argon2-jvm:2.11")
+	include("de.mkammerer:argon2-jvm-nolibs:2.11")
 }
 
 tasks.processResources {

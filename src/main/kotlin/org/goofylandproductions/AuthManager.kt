@@ -81,12 +81,4 @@ object AuthManager {
         val loaded: Map<String, AuthEntry> = gson.fromJson(dataFile.readText(), type)
         passwordStore.putAll(loaded)
     }
-
-    // crypto helpers
-
-    private fun ByteArray.toHex(): String =
-        joinToString("") { "%02X".format(it) }
-
-    private fun String.fromHex(): ByteArray =
-        chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
